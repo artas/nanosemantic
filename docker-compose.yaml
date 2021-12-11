@@ -1,0 +1,24 @@
+version: "3.7"
+services:
+  web-service:
+    container_name: nanosemantic
+    build: .
+    ports:
+    - 8000:8000
+    volumes:
+    - ./logs:/opt/app/logs
+    environment:
+      DB_URL: postgresql+asyncpg://root:root@192.168.56.1:32700/web
+    depends_on:
+      - db
+    command: uvicorn app.main:app --reload --workers 1 --host 0.0.0.0 --port 8000
+  db:
+    image:  postgres:11
+    ports:
+      - 32700:5432
+    volumes:
+      - ./data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER:  root
+      POSTGRES_PASSWORD:  root
+      POSTGRES_DB: web
